@@ -14,7 +14,7 @@ class CRUDUser(CRUDBase[m.User, s.user.UserInDBCreate, s.user.UserInDBUpdate]):
         return self.get(session, filters=[m.User.phone_number == phone_number])
 
     def search(
-        self, session: Session, /, search: s.search.Search
+        self, session: Session, /, current_user: m.User, search: s.search.Search
     ) -> tuple[list[m.User], int]:
         term_filter: ColumnElement
         try:
@@ -27,7 +27,7 @@ class CRUDUser(CRUDBase[m.User, s.user.UserInDBCreate, s.user.UserInDBUpdate]):
             session,
             token=(m.User.created_at, search.token),
             limit=search.limit,
-            filters=[term_filter],
+            filters=[term_filter, m.User.id != current_user.id],
             order_by=m.User.created_at,
         )
 

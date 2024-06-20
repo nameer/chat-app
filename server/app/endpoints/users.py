@@ -13,9 +13,14 @@ router = APIRouter()
 @router.get("", response_model=s.user.UserList)
 def search_users(
     session: Annotated[Session, Depends(get_db_session)],
+    current_user: Annotated[m.User, Depends(get_user)],
     search: Annotated[s.search.Search, Depends()],
 ) -> dict:
-    results, total_count = crud.user.search(session, search=search)
+    results, total_count = crud.user.search(
+        session,
+        current_user=current_user,
+        search=search,
+    )
     return {"results": results, "total_count": total_count}
 
 
