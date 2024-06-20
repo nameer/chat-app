@@ -47,3 +47,13 @@ def get_user(
     if not (user := crud.user.get(session, id=payload.user_id)):
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="No such user")
     return user
+
+
+def get_chat(
+    session: Annotated[Session, Depends(get_db_session)],
+    current_user: Annotated[m.User, Depends(get_user)],
+    chat_id: int,
+) -> m.Chat:
+    if crud.user.has_chat(session, current_user, chat_id=chat_id):
+        return crud.chat.get(session, id=chat_id)
+    raise HTTPException(status.HTTP_404_NOT_FOUND, detail="No such chat")

@@ -125,7 +125,10 @@ class CRUDBase[
 
         field, value = token
         if field and value:
-            filters.append(field > value)
+            if order_by is not None and "DESC" in str(order_by):
+                filters.append(field < value)
+            else:
+                filters.append(field > value)
 
         stmt = select(self.model).where(*filters).options(*options)
         if order_by is not None:

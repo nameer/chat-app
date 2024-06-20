@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import ForeignKey, String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, Relationship, mapped_column, relationship
 
 from app.db.base_class import Base
 
@@ -26,12 +26,15 @@ class Chat(Base):
         back_populates="chats",
         viewonly=True,
     )
-    messages: Mapped[list["Message"]] = relationship(
+    messages: Relationship[list["Message"]] = relationship(
         lazy="dynamic",
         back_populates="chat",
     )
 
-    memberships: Mapped[list["ChatMember"]] = relationship(back_populates="chat")
+    memberships: Relationship[list["ChatMember"]] = relationship(
+        lazy="dynamic",
+        back_populates="chat",
+    )
 
 
 class ChatMember(Base):

@@ -2,7 +2,7 @@ from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from sqlalchemy import String
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy.orm import Mapped, Relationship, mapped_column, relationship
 
 from app.db.base_class import Base
 
@@ -27,4 +27,7 @@ class User(Base):
         secondary="ChatMember", back_populates="members", viewonly=True
     )
 
-    memberships: Mapped[list["ChatMember"]] = relationship(back_populates="member")
+    memberships: Relationship[list["ChatMember"]] = relationship(
+        lazy="dynamic",
+        back_populates="member",
+    )

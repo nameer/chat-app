@@ -1,5 +1,5 @@
 from pydantic import TypeAdapter
-from sqlalchemy import ColumnElement, func, or_, select
+from sqlalchemy import func, or_, select
 from sqlalchemy.orm import Session, aliased, joinedload
 
 from app import models as m
@@ -55,15 +55,17 @@ class CRUDChat(CRUDBase[m.Chat, s.chat.ChatInDBCreate, s.chat.ChatInDBUpdate]):
     def search(
         self, session: Session, /, user: m.User, search: s.search.Search
     ) -> tuple[list[m.Chat], int]:
-        term_filter: ColumnElement
-        try:
-            TypeAdapter.validate_python(TypeAdapter(PhoneNumberStr), search.term)
-            term_filter = m.User.phone_number == search.term
-        except Exception:
-            term_filter = or_(
-                m.Chat.name.ilike(f"%{search.term}%"),
-                m.User.name.ilike(f"%{search.term}%"),
-            )
+        if search.term:
+            try:
+                TypeAdapter.validate_python(TypeAdapter(PhoneNumberStr), search.term)
+                term_filter = m.User.phone_number == search.term
+            except Exception:
+                term_filter = or_(
+                    m.Chat.name.ilike(f"%{search.term}%"),
+                    m.User.name.ilike(f"%{search.term}%"),
+                )
+        else:
+            term_filter = None
 
         stmt = (
             select(m.Chat)
@@ -76,9 +78,10 @@ class CRUDChat(CRUDBase[m.Chat, s.chat.ChatInDBCreate, s.chat.ChatInDBUpdate]):
             )
             .join(m.ChatMember, m.Chat.id == m.ChatMember.chat_id)
             .join(m.User, m.ChatMember.user_id == m.User.id)
-            .where(term_filter, m.User.id != user.id)
-            .options(joinedload(m.Chat.members))
         )
+        if term_filter is not None:
+            stmt = stmt.where(term_filter, m.User.id != user.id)
+        stmt = stmt.options(joinedload(m.Chat.members))
         total_count = session.scalar(stmt.with_only_columns(func.count()))
 
         if search.token:

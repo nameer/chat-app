@@ -12,4 +12,4 @@ class Pagination(BaseModel):
 
 
 class Search(Pagination):
-    term: PhoneNumberStr | Annotated[str, Field(min_length=3)]
+    term: PhoneNumberStr | Annotated[str, Field(min_length=3)] | None = None

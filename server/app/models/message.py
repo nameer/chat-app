@@ -28,4 +28,4 @@ class Message(Base):
 
     @hybrid_property
     def is_deleted(self) -> bool:
-        return self.content.is_(None)
+        return self.content == None  # noqa: E711

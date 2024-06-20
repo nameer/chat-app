@@ -8,8 +8,6 @@ from pydantic import (
 
 # Shared properties
 class MessageBase(BaseModel):
-    chat_id: int
-
     content: str | None
 
 
@@ -24,6 +22,7 @@ class MessageCreate(MessageBase):
 # Properties to be stored in the DB on creation
 class MessageInDBCreate(MessageCreate):
     sender_id: int
+    chat_id: int
 
 
 # -- Update schema -- #
@@ -43,6 +42,7 @@ class Message(MessageBase):
 
     id: int
     sender_id: int
+    chat_id: int
 
     is_edited: bool
     is_deleted: bool
