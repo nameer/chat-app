@@ -1,9 +1,11 @@
 #!/usr/local/bin/python
 
-from app.core.logger import logger
-from app.db.session import SessionLocal
+import alembic.config
 from sqlalchemy import text
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
+
+from app.core.logger import logger
+from app.db.session import SessionLocal
 
 max_tries = 60 * 5  # 5 minutes
 wait_seconds = 1
@@ -27,10 +29,19 @@ def init_db_service() -> None:
         raise
 
 
+def db_migration() -> None:
+    args = ["upgrade", "head"]
+    alembic.config.main(argv=args)
+
+
 def main() -> None:
     logger.info("Initializing database service")
     init_db_service()
     logger.info("Database service finished initializing")
+
+    logger.info("Starting database migration")
+    db_migration()
+    logger.info("Database migration finished")
 
 
 if __name__ == "__main__":
