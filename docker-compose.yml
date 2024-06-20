@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: chat-postgres
+    volumes:
+      - ./tmp/postgres-data:/data/context
+    environment:
+      POSTGRES_SERVER: ${POSTGRES_SERVER?Variable not set}
+      POSTGRES_USER: ${POSTGRES_USER?Variable not set}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD?Variable not set}
+      POSTGRES_DB: ${POSTGRES_NAME?Variable not set}
+      PGDATA: /data/context
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    restart: unless-stopped
+
+  server:
+    build:
+      context: server
+      args:
+        - PORT=$SERVER_PORT
+    image: chat-server
+    container_name: chat-server
+    volumes:
+      - ./server/app:/code/app
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    environment:
+      SERVER_NAME: ${DOMAIN?Variable not set}
+      LOG_LEVEL: ${LOGGING__LEVEL:-info}
+      PORT: ${SERVER_PORT:-8000}
+    ports:
+      - "${SERVER_PORT:-8000}:${SERVER_PORT:-8000}"
+    restart: unless-stopped
+    command: fastapi dev --host 0.0.0.0
+
+  app:
+    build:
+      context: web
+      args:
+        - PORT=$WEBAPP_PORT
+    image: chat-web
+    container_name: chat-web
+    command: yarn dev
+    volumes:
+      - ./web/public:/app/public
+      - ./web/src:/app/src
+    depends_on:
+      - server
+    env_file:
+      - .env
+    environment:
+      NEXT_TELEMETRY_DISABLED: 1
+      PORT: $WEBAPP_PORT
+    restart: unless-stopped
+    ports:
+      - "$WEBAPP_PORT:$WEBAPP_PORT"

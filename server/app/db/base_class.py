@@ -1,17 +1,14 @@
 from typing import Any
 
-from sqlalchemy.orm import as_declarative, declared_attr
+from sqlalchemy.orm import DeclarativeBase, declared_attr
 from sqlalchemy.sql.schema import MetaData
 
 
-@as_declarative()
-class Base:
+class Base(DeclarativeBase):
     __name__: str
 
     id: Any
     metadata: MetaData
-
-    def __init__(self, *args: Any, **kwargs: Any) -> None: ...
 
     # Generate __tablename__ automatically
     @classmethod
