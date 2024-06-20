@@ -66,5 +66,5 @@ def upgrade() -> None:
 def downgrade() -> None:
     op.drop_table("Message")
     op.drop_table("ChatMember")
-    op.drop_table("User")
     op.drop_table("Chat")
+    op.drop_table("User")
