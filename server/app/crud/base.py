@@ -1,5 +1,6 @@
 from enum import Enum
 from functools import cached_property
+from select import select
 from types import EllipsisType
 from typing import Any, Self
 
@@ -32,7 +33,7 @@ class SaveAction(Enum):
         return _save_action_list.index(self) > _save_action_list.index(other)
 
 
-class CRUsessionase[
+class CRUDBase[
     ModelType: Base,
     CreateSchemaType: BaseModel,
     UpdateSchemaType: BaseModel,
@@ -95,9 +96,9 @@ class CRUsessionase[
         options = options or []
         if id is not None:
             filters.append(self.model.id == id)
-        return (
-            session.query(self.model).options(*options).filter(*filters).one_or_none()
-        )
+        return session.execute(
+            select(self.model).where(*filters).options(*options)
+        ).one_or_none()
 
     def get_multi(  # noqa: PLR0913
         self,
@@ -113,31 +114,27 @@ class CRUsessionase[
     ) -> tuple[list[ModelType], int]:
         options = options or []
         filters = filters or []
-        query = session.query(self.model).options(*options)
         if ids:
             filters.append(self.model.id.in_(ids))
-        if filters:
-            query = query.filter(*filters)
 
-        count_query = query.with_entities(func.count())
-        if not filters:
-            # Reference: https://github.com/sqlalchemy/sqlalchemy/discussions/8788
-            count_query = count_query.select_from(self.model)
-
-        total_count = count_query.scalar()
+        total_count = session.scalar(
+            select(func.count()).select_from(self.model).where(*filters)
+        )
         if limit == 0:
             # Avoid unnecessary database query.
             return [], total_count
 
         if token:
             field, value = token
-            query = query.filter(field > value)
-        if order_by is not None:
-            query = query.order_by(order_by)
-        if limit:
-            query = query.limit(limit)
+            filters.append(field > value)
 
-        items = query.all()
+        stmt = select(self.model).where(*filters).options(*options)
+        if order_by is not None:
+            stmt = stmt.order_by(order_by)
+        if limit:
+            stmt = stmt.limit(limit)
+
+        items = session.execute(stmt).all()
         return items, total_count
 
     def get_count(
@@ -146,16 +143,8 @@ class CRUsessionase[
         /,
         filters: list[ColumnElement] | None = None,
     ) -> int:
-        query = session.query(self.model)
-        if filters:
-            query = query.filter(*filters)
-        query = query.with_entities(func.count())
-
-        if not filters:
-            # Reference: https://github.com/sqlalchemy/sqlalchemy/issues/8785
-            query = query.select_from(self.model)
-
-        return query.scalar()
+        _, count = self.get_multi(session, limit=0, filters=filters)
+        return count
 
     def update(  # noqa: PLR0913
         self,
