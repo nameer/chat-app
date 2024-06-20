@@ -30,7 +30,7 @@ class MessageInDBCreate(MessageCreate):
 
 
 # Properties to be stored in the DB on update
-class MessageInDBUpdate(BaseModel()):
+class MessageInDBUpdate(BaseModel):
     pass
 
 
