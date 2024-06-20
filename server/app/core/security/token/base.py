@@ -22,7 +22,6 @@ class JWTData:
     token_type: str
 
     sub: str  # Subject
-    client_id: str | None = None
 
     _: KW_ONLY
     include_iat: bool = True  # Include 'Issued At' or not
@@ -42,7 +41,6 @@ class JWTToken:
             to_encode["iat"] = now.timestamp()
         update_not_none(
             to_encode,
-            client_id=data.client_id,
             jti=data.jti,
             at_hash=data.at_hash,
         )
@@ -80,15 +78,9 @@ class BaseToken(abc.ABC):
         *,
         expires_delta: timedelta | None = None,
     ) -> str:
-        client_id = (
-            str(payload.user_credential_id)
-            if payload.user_credential_id is not None
-            else None
-        )
         data = JWTData(
             cls.TOKEN_TYPE,
             str(payload.user_id),
-            client_id,
             jti=str(payload.token_id),
             expires_delta=expires_delta,
         )
@@ -104,7 +96,6 @@ class BaseToken(abc.ABC):
         try:
             payload = s.auth.TokenPayload(
                 user_id=data["sub"],
-                user_credential_id=data.get("client_id"),
                 token_id=data.get("jti"),
                 issued_at=data["iat"],
             )

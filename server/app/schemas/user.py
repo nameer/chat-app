@@ -5,12 +5,12 @@ from pydantic import (
     ConfigDict,
 )
 
-from .base import NonEmptyStr, OptionalNonEmptyStr, PhoneNumberStr
+from .base import NonEmptyStr, PhoneNumberStr
 
 
 # Shared properties
 class UserBase(BaseModel):
-    name: OptionalNonEmptyStr = None
+    name: NonEmptyStr | None = None
     phone_number: PhoneNumberStr
 
 

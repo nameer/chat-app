@@ -36,7 +36,7 @@ services:
     restart: unless-stopped
     command: fastapi dev --host 0.0.0.0
 
-  app:
+  web:
     build:
       context: web
       args:

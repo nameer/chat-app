@@ -1,15 +1,15 @@
 from datetime import datetime
+from typing import Annotated
 
-from pydantic import BaseModel, PositiveInt
+from pydantic import BaseModel, Field, PositiveInt
 
 from .base import PhoneNumberStr
 
 
 class Pagination(BaseModel):
-    token: datetime
+    token: datetime | None = None
     limit: PositiveInt
 
 
 class Search(Pagination):
-    phone_number: PhoneNumberStr | None = None
-    name: str | None = None
+    term: PhoneNumberStr | Annotated[str, Field(min_length=3)]

@@ -43,10 +43,3 @@ class TokenPayload(BaseModel):
         if v is not None:
             v = v.astimezone(UTC).replace(tzinfo=None)
         return v
-
-
-class Token(BaseModel):
-    access_token: str
-
-    token_type: str
-    expires_in: int

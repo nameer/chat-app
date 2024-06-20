@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request, status
+from fastapi import Depends, FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, ORJSONResponse
@@ -8,7 +8,8 @@ from pydantic import ValidationError
 
 from app import prestart
 from app.core.config import settings
-from app.endpoints import auth
+from app.deps import get_user
+from app.endpoints import auth, users
 
 from . import __version__
 
@@ -64,3 +65,32 @@ def root() -> dict:
 
 
 app.include_router(auth.router, prefix="/auth")
+app.include_router(
+    users.router,
+    prefix="/users",
+    dependencies=[Depends(get_user)],
+    responses={
+        401: {
+            "description": "Not authenticated",
+            "content": {
+                "application/json": {"example": {"detail": "Not authenticated"}}
+            },
+        },
+        403: {
+            "description": "Access denied",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "The user does not have enough privileges"}
+                }
+            },
+        },
+        404: {
+            "description": "Resource not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "The requested resource was not found"}
+                }
+            },
+        },
+    },
+)

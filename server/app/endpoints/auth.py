@@ -6,7 +6,7 @@ from app import schemas as s
 from app.core.config import settings
 from app.core.security.token import AccessToken
 from app.deps import get_db_session
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Response, status
 from sqlalchemy.orm import Session
 
 router = APIRouter()
@@ -38,7 +38,6 @@ def request_otp(data: s.auth.OTPRequest) -> dict:
 
 @router.post(
     "/verify-otp",
-    response_model=s.auth.Token,
     responses={
         401: {
             "description": "Wrong or expired OTP",
@@ -49,9 +48,10 @@ def request_otp(data: s.auth.OTPRequest) -> dict:
     },
 )
 def validate_otp(
+    response: Response,
     session: Annotated[Session, Depends(get_db_session)],
     data: s.auth.OTPVerify,
-) -> dict:
+) -> None:
     # TODO:
     #   1. Get OTP from Redis using phone-number & token. Raise 401 if not found
     #   2. Check if OTPs match
@@ -62,13 +62,25 @@ def validate_otp(
 
     user = crud.user.get_by_phone_number(session, data.phone_number)
     if not user:
-        crud.user.create(session, s.user.UserCreate(phone_number=data.phone_number))
+        user = crud.user.create(
+            session,
+            s.user.UserCreate(phone_number=data.phone_number),
+        )
 
     payload = s.auth.TokenPayload(user_id=user.id)
     access_token_exp = timedelta(minutes=settings.ACCESS_TOKEN.EXPIRE_MINUTES)
     access_token = AccessToken.create(payload, expires_delta=access_token_exp)
 
-    return {
-        "access_token": access_token,
-        "expires_in": access_token_exp.total_seconds(),
-    }
+    header_payload, signature = access_token.rsplit(".", 1)
+
+    response.set_cookie(
+        "access_token_signature",
+        signature,
+        expires=access_token_exp.total_seconds(),
+        httponly=True,
+    )
+    response.set_cookie(
+        "access_token_header_payload",
+        header_payload,
+        expires=access_token_exp.total_seconds(),
+    )

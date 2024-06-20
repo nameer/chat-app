@@ -95,7 +95,7 @@ class CRUDBase[
         options = options or []
         if id is not None:
             filters.append(self.model.id == id)
-        return session.execute(
+        return session.scalars(
             select(self.model).where(*filters).options(*options)
         ).one_or_none()
 
@@ -123,8 +123,8 @@ class CRUDBase[
             # Avoid unnecessary database query.
             return [], total_count
 
-        if token:
-            field, value = token
+        field, value = token
+        if field and value:
             filters.append(field > value)
 
         stmt = select(self.model).where(*filters).options(*options)
@@ -133,7 +133,7 @@ class CRUDBase[
         if limit:
             stmt = stmt.limit(limit)
 
-        items = session.execute(stmt).all()
+        items = session.scalars(stmt).all()
         return items, total_count
 
     def get_count(

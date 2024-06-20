@@ -1,7 +1,8 @@
 import sys
 
-from app.core.config import settings
 from loguru import logger
+
+from app.core.config import settings
 
 level = settings.LOGGING.LEVEL
 serialize = settings.LOGGING.SERIALIZE

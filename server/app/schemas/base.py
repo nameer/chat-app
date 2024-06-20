@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from pydantic import SecretStr, StringConstraints
-from pydantic.functional_validators import AfterValidator
 from pydantic_extra_types.phone_numbers import PhoneNumber
 
 from app.core.config import settings
@@ -30,5 +29,4 @@ def validate_not_none(value: str | None) -> str:
 
 CleanStr = Annotated[str, StringConstraints(strip_whitespace=True)]
 NonEmptyStr = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
-OptionalNonEmptyStr = Annotated[NonEmptyStr | None, AfterValidator(validate_not_none)]
 PasswordStr = Annotated[SecretStr, StringConstraints(min_length=8)]
