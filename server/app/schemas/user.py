@@ -1,8 +1,10 @@
 from datetime import datetime
+from typing import Annotated
 
 from pydantic import (
     BaseModel,
     ConfigDict,
+    Field,
 )
 
 from .base import NonEmptyStr, PhoneNumberStr
@@ -10,7 +12,7 @@ from .base import NonEmptyStr, PhoneNumberStr
 
 # Shared properties
 class UserBase(BaseModel):
-    name: NonEmptyStr | None = None
+    name: Annotated[NonEmptyStr, Field(max_length=30)] | None = None
     phone_number: PhoneNumberStr
 
 
@@ -32,7 +34,7 @@ class UserInDBCreate(UserBase):
 
 # Properties to receive via API on update
 class UserUpdate(BaseModel):
-    name: NonEmptyStr
+    name: Annotated[NonEmptyStr, Field(max_length=30)]
 
 
 # Properties to be stored in the DB on update

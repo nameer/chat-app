@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base_class import Base
@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 class Chat(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
+    name: Mapped[str | None] = mapped_column(String(20))
     is_group: Mapped[bool] = mapped_column()
 
     created_by: Mapped[datetime] = mapped_column(ForeignKey("User.id"))

@@ -32,6 +32,7 @@ def upgrade() -> None:
     op.create_table(
         "Chat",
         sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("name", sa.String(), nullable=True),
         sa.Column("is_group", sa.Boolean(), nullable=False),
         sa.Column("created_by", sa.Integer(), nullable=False),
         sa.Column("created_at", sa.DateTime(), nullable=False),
