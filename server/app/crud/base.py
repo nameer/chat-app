@@ -1,12 +1,11 @@
 from enum import Enum
 from functools import cached_property
-from select import select
 from types import EllipsisType
 from typing import Any, Self
 
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from sqlalchemy import ColumnElement, func
+from sqlalchemy import ColumnElement, func, select
 from sqlalchemy.orm import Session
 from sqlalchemy.orm.attributes import InstrumentedAttribute
 from sqlalchemy.sql.base import ExecutableOption
