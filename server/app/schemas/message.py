@@ -19,6 +19,12 @@ class MessageCreate(MessageBase):
     content: str
 
 
+# Properties to receive via WS on creation
+class MessageWSCreate(MessageBase):
+    chat_id: int
+    content: str
+
+
 # Properties to be stored in the DB on creation
 class MessageInDBCreate(MessageCreate):
     sender_id: int

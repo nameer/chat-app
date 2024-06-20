@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from app import prestart
 from app.core.config import settings
 from app.deps import get_chat, get_user
-from app.endpoints import auth, chats, messages, users
+from app.endpoints import auth, chats, messages, notifications, users
 
 from . import __version__
 
@@ -158,4 +158,10 @@ app.include_router(
             },
         },
     },
+)
+app.include_router(
+    notifications.router,
+    prefix="/notifications",
+    dependencies=[Depends(get_user)],
+    tags=["Notification"],
 )
