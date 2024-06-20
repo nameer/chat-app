@@ -14,12 +14,14 @@ class OTPRequest(BaseModel):
 
 
 class OTPInfo(BaseModel):
+    token: str
     expires_in: int
 
 
 class OTPVerify(BaseModel):
+    token: str
     phone_number: PhoneNumberStr
-    OTP: Annotated[
+    otp: Annotated[
         str,
         Field(
             min_length=settings.OTP_LENGTH,

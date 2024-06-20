@@ -33,7 +33,7 @@ def request_otp(data: s.auth.OTPRequest) -> dict:
     #   2. Get attempts from redis. If already exeeded, raise 429
     #   2. Save phonenumber-OTP map in Redis, with ttl, and update attempts
     #   3. Send OTP to mobile
-    return {"expires_in": 500}
+    return {"token": "abc123", "expires_in": 500}
 
 
 @router.post(
@@ -53,7 +53,7 @@ def validate_otp(
     data: s.auth.OTPVerify,
 ) -> dict:
     # TODO:
-    #   1. Get OTP from Redis using phone-number. Raise 401 if not found
+    #   1. Get OTP from Redis using phone-number & token. Raise 401 if not found
     #   2. Check if OTPs match
     #   3. a. If matches,
     #         i.  remove OTP from redis
