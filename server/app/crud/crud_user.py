@@ -1,3 +1,4 @@
+from pydantic import TypeAdapter
 from sqlalchemy import ColumnElement
 from sqlalchemy.orm import Session
 
@@ -17,10 +18,10 @@ class CRUDUser(CRUDBase[m.User, s.user.UserInDBCreate, s.user.UserInDBUpdate]):
     ) -> tuple[list[m.User], int]:
         term_filter: ColumnElement
         try:
-            PhoneNumberStr(search.term)
+            TypeAdapter.validate_python(TypeAdapter(PhoneNumberStr), search.term)
             term_filter = m.User.phone_number == search.term
         except Exception:
-            term_filter = m.User.name.ilike(search.term)
+            term_filter = m.User.name.ilike(f"%{search.term}%")
 
         return self.get_multi(
             session,
