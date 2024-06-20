@@ -8,6 +8,7 @@ from pydantic import ValidationError
 
 from app import prestart
 from app.core.config import settings
+from app.endpoints import auth
 
 from . import __version__
 
@@ -60,3 +61,6 @@ def root() -> dict:
         "message": f"Welcome to {settings.PROJECT_NAME}!",
         "version": __version__,
     }
+
+
+app.include_router(auth.router, prefix="/auth")

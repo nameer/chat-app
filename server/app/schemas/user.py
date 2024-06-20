@@ -10,7 +10,7 @@ from .base import NonEmptyStr, OptionalNonEmptyStr, PhoneNumberStr
 
 # Shared properties
 class UserBase(BaseModel):
-    name: OptionalNonEmptyStr
+    name: OptionalNonEmptyStr = None
     phone_number: PhoneNumberStr
 
 

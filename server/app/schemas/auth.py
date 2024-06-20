@@ -13,6 +13,10 @@ class OTPRequest(BaseModel):
     phone_number: PhoneNumberStr
 
 
+class OTPInfo(BaseModel):
+    expires_in: int
+
+
 class OTPVerify(BaseModel):
     phone_number: PhoneNumberStr
     OTP: Annotated[
@@ -29,8 +33,6 @@ class TokenPayload(BaseModel):
     token_id: UUID4 = Field(default_factory=uuid4)
 
     user_id: int
-    user_credential_id: int | None = None
-
     issued_at: datetime | None = None
 
     @field_validator("issued_at")

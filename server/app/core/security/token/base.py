@@ -3,11 +3,12 @@ from dataclasses import KW_ONLY, dataclass
 from datetime import datetime, timedelta
 from typing import Any
 
-from app.core.config import settings
-from app.schemas.token import TokenPayload
 from jose import jwt
 from jose.exceptions import JWTError
 from pydantic import ValidationError
+
+from app import schemas as s
+from app.core.config import settings
 
 ALGORITHM = "HS256"
 
@@ -75,7 +76,7 @@ class BaseToken(abc.ABC):
     @classmethod
     def create(
         cls,
-        payload: TokenPayload,
+        payload: s.auth.TokenPayload,
         *,
         expires_delta: timedelta | None = None,
     ) -> str:
@@ -94,14 +95,14 @@ class BaseToken(abc.ABC):
         return JWTToken.create(data)
 
     @classmethod
-    def decode(cls, token: str) -> TokenPayload:
+    def decode(cls, token: str) -> s.auth.TokenPayload:
         data = JWTToken.decode(token)
         if data.get("token_type") != cls.TOKEN_TYPE:
             msg = "Invalid token"
             raise ValueError(msg)
 
         try:
-            payload = TokenPayload(
+            payload = s.auth.TokenPayload(
                 user_id=data["sub"],
                 user_credential_id=data.get("client_id"),
                 token_id=data.get("jti"),
