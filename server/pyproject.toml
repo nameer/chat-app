@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "chat"
+version = "0.1.0"
+description = "Simple chat app"
+authors = ["Nameer P K <nameerpk.95@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+alembic = "*"
+fastapi = "*"
+loguru = "*"
+orjson = "*"
+passlib = "*"
+phonenumbers = "*"
+psycopg2 = "*"
+pydantic = {version = "*", extras = ["email"]}
+pydantic-extra-types = "*"
+pydantic-settings = "*"
+python-jose = {version = "*", extras = ["cryptography"]}
+sqlalchemy = "*"
+tenacity = "*"
+
+
+[tool.poetry.group.dev.dependencies]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
