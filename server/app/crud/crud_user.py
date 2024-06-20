@@ -1,3 +1,5 @@
+from typing import Iterable
+
 from pydantic import TypeAdapter
 from sqlalchemy import ColumnElement
 from sqlalchemy.orm import Session
@@ -10,6 +12,9 @@ from .base import CRUDBase
 
 
 class CRUDUser(CRUDBase[m.User, s.user.UserInDBCreate, s.user.UserInDBUpdate]):
+    def exists(self, session: Session, /, ids: Iterable[int]) -> bool:
+        return self.get_count(session, filters=[m.User.id.in_(ids)]) == len(ids)
+
     def get_by_phone_number(self, session: Session, /, phone_number: str) -> m.User:
         return self.get(session, filters=[m.User.phone_number == phone_number])
 

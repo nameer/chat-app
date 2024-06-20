@@ -8,7 +8,15 @@ from .user import User
 
 # Shared properties
 class ChatBase(BaseModel):
+    name: str | None
     is_group: bool
+
+    @model_validator(mode="after")
+    def fields_present(self) -> Self:
+        assert bool(self.name) is bool(
+            self.is_group
+        ), "Naming is supported only for groups"
+        return self
 
 
 # -- Create schema -- #
@@ -16,7 +24,7 @@ class ChatBase(BaseModel):
 
 # Properties to receive via API on creation
 class ChatCreate(ChatBase):
-    members: list[int]  # Only others
+    members: set[int]  # Only others
 
     @model_validator(mode="after")
     def valid_member_count(self) -> Self:
@@ -29,15 +37,15 @@ class ChatCreate(ChatBase):
 
 # Properties to be stored in the DB on creation
 class ChatInDBCreate(ChatBase):
-    pass
+    created_by: int
 
 
 # -- Update schema -- #
 
 
 # Properties to be stored in the DB on update
-class UserInDBUpdate(BaseModel):
-    pass
+class ChatInDBUpdate(BaseModel):
+    name: str
 
 
 # -- Read schema -- #
@@ -59,5 +67,5 @@ class ChatWithMembers(Chat):
 
 
 class ChatList(BaseModel):
-    results: list[Chat]
+    results: list[ChatWithMembers]
     total_count: int

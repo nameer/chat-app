@@ -24,11 +24,14 @@ class Chat(Base):
     members: Mapped[list[User]] = relationship(
         secondary="ChatMember",
         back_populates="chats",
+        viewonly=True,
     )
     messages: Mapped[list["Message"]] = relationship(
         lazy="dynamic",
         back_populates="chat",
     )
+
+    memberships: Mapped[list["ChatMember"]] = relationship(back_populates="chat")
 
 
 class ChatMember(Base):
@@ -36,3 +39,6 @@ class ChatMember(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("User.id"), primary_key=True)
 
     joined_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
+
+    chat: Mapped[Chat] = relationship(back_populates="memberships")
+    member: Mapped[User] = relationship(back_populates="memberships")

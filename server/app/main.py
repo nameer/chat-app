@@ -9,7 +9,7 @@ from pydantic import ValidationError
 from app import prestart
 from app.core.config import settings
 from app.deps import get_user
-from app.endpoints import auth, users
+from app.endpoints import auth, chats, users
 
 from . import __version__
 
@@ -64,11 +64,46 @@ def root() -> dict:
     }
 
 
-app.include_router(auth.router, prefix="/auth")
+app.include_router(
+    auth.router,
+    prefix="/auth",
+    tags=["Auth"],
+)
 app.include_router(
     users.router,
     prefix="/users",
     dependencies=[Depends(get_user)],
+    tags=["User"],
+    responses={
+        401: {
+            "description": "Not authenticated",
+            "content": {
+                "application/json": {"example": {"detail": "Not authenticated"}}
+            },
+        },
+        403: {
+            "description": "Access denied",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "The user does not have enough privileges"}
+                }
+            },
+        },
+        404: {
+            "description": "Resource not found",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "The requested resource was not found"}
+                }
+            },
+        },
+    },
+)
+app.include_router(
+    chats.router,
+    prefix="/chats",
+    dependencies=[Depends(get_user)],
+    tags=["Chat"],
     responses={
         401: {
             "description": "Not authenticated",
