@@ -23,4 +23,7 @@ class User(Base):
         onupdate=lambda: datetime.now(UTC),
     )
 
-    chats: Mapped[list["Chat"]] = relationship(secondary="ChatMember")
+    chats: Mapped[list["Chat"]] = relationship(
+        secondary="ChatMember",
+        back_populates="members",
+    )

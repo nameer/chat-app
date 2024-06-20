@@ -24,7 +24,7 @@ class Message(Base):
         onupdate=lambda: datetime.now(UTC),
     )
 
-    chat: Mapped[Chat] = relationship()
+    chat: Mapped[Chat] = relationship(back_populates="messages")
 
     @hybrid_property
     def is_deleted(self) -> bool:

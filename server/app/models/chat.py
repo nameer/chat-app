@@ -20,8 +20,14 @@ class Chat(Base):
     created_by: Mapped[datetime] = mapped_column(ForeignKey("User.id"))
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
 
-    members: Mapped[list[User]] = relationship(secondary="ChatMember")
-    messages: Mapped[list["Message"]] = relationship(lazy="dynamic")
+    members: Mapped[list[User]] = relationship(
+        secondary="ChatMember",
+        back_populates="chats",
+    )
+    messages: Mapped[list["Message"]] = relationship(
+        lazy="dynamic",
+        back_populates="chat",
+    )
 
 
 class ChatMember(Base):
