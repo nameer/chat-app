@@ -15,13 +15,12 @@ if TYPE_CHECKING:
 class Chat(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
-    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
-    last_updated_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(UTC),
-        onupdate=lambda: datetime.now(UTC),
-    )
+    is_group: Mapped[bool] = mapped_column()
 
-    users: Mapped[list[User]] = relationship(secondary="ChatMember")
+    created_by: Mapped[datetime] = mapped_column(ForeignKey("User.id"))
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(UTC))
+
+    members: Mapped[list[User]] = relationship(secondary="ChatMember")
     messages: Mapped[list["Message"]] = relationship(lazy="dynamic")
 
 

@@ -66,12 +66,12 @@ class Settings(BaseSettings):
 
     # --- Configurations --- #
 
-    # Tokens
+    DEFAULT_REGION_CODE: str = "IN"
+    OTP_LENGTH: int = 4
+
     ACCESS_TOKEN: TokenConfig
 
     LOGGING: LoggingConfig = LoggingConfig()
-
-    DEFAULT_REGION_CODE: str = "IN"
 
 
 settings = Settings()
