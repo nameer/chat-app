@@ -9,17 +9,32 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.20",
+    "@mui/material": "^5.15.20",
+    "axios": "^1.7.2",
+    "cookies-next": "^4.2.1",
     "corepack": "^0.28.2",
+    "humps": "^2.0.1",
     "next": "^14",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "swr": "^2",
+    "typescript": "^5"
   },
   "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "^4",
+    "@types/humps": "^2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.4",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-unused-imports": "^3.0.0",
+    "prettier": "^3.0.3",
     "typescript": "^5"
   },
   "description": "Simple chat app",

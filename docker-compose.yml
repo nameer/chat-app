@@ -54,6 +54,8 @@ services:
     environment:
       NEXT_TELEMETRY_DISABLED: 1
       PORT: $WEBAPP_PORT
+      NEXT_PUBLIC_PROJECT_NAME: ${PROJECT_NAME?Variable not set}
+      NEXT_PUBLIC_DESCRIPTION: ${PROJECT_DESCRIPTION?Variable not set}
     restart: unless-stopped
     ports:
       - "$WEBAPP_PORT:$WEBAPP_PORT"
