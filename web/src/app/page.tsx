@@ -1,7 +1,11 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+import Image from 'next/image'
+import styles from './page.module.css'
+import { ColorModeContext } from '@/lib/context'
+import { useContext } from 'react'
 
 export default function Home() {
+  const { colorMode, changeColorMode } = useContext(ColorModeContext)
   return (
     <main className={styles.main}>
       <div className={styles.description}>
@@ -15,16 +19,23 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
+            By{' '}
           </a>
+          <Image
+            src="/vercel.svg"
+            alt="Vercel Logo"
+            className={styles.vercelLogo}
+            width={100}
+            height={24}
+            priority
+            onClick={e =>
+              colorMode == 'dark'
+                ? changeColorMode('light')
+                : colorMode == 'light'
+                  ? changeColorMode(undefined)
+                  : changeColorMode('dark')
+            }
+          />
         </div>
       </div>
 
@@ -91,5 +102,5 @@ export default function Home() {
         </a>
       </div>
     </main>
-  );
+  )
 }
