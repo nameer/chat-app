@@ -3,7 +3,7 @@ import { camelizeKeys, decamelizeKeys } from 'humps'
 import { deleteCookie } from 'cookies-next'
 import { ACCESS_TOKEN_COOKIE } from '@/constants/auth'
 
-const logout = async () => {
+export const logout = async () => {
   try {
     await instance.post('/auth/revoke-token')
   } catch {}
